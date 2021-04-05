@@ -3,6 +3,8 @@ const { STRING } = Sequelize;
 const config = {
   logging: false,
 };
+const secret_key = process.env.JWT
+const jwt = require("jsonwebtoken");
 
 if (process.env.LOGGING) {
   delete config.logging;
@@ -19,7 +21,11 @@ const User = conn.define("user", {
 
 User.byToken = async (token) => {
   try {
-    const user = await User.findByPk(token);
+    console.log('this is the output of byToken -->', token)
+    const verified = await jwt.verify(token, secret_key)
+    console.log('verified', verified)
+    const user = await User.findByPk(verified);
+    console.log(user)
     if (user) {
       return user;
     }
